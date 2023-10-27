@@ -1,0 +1,8 @@
+<div class="display-field" id="display">
+    <span class="display-value">
+        <span *ngIf="!resultData.num1 && !resultData.result">0</span>
+        <span *ngIf="resultData.num1 && !resultData.isSecondNumber">{{resultData.num1}}</span>
+        <span *ngIf="resultData.isSecondNumber">{{resultData.num2}}</span>
+        <span *ngIf="resultData.result && !resultData.num1">{{resultData.result}}</span>
+    </span>
+</div>

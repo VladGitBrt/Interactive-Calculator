@@ -1,0 +1,174 @@
+<div class="main-container">
+    <div class="main-block">
+        <div class="mode">
+            <button (click)="setRuntime()" class="runtime" [ngClass]="{'active': mode === 'runtime', 'inactive': mode === 'constructor'}">
+                <img src="../../../assets/eye.svg" [ngClass]="{'active-icon': mode === 'runtime'}">
+                <span>Runtime</span>
+            </button>
+            <button (click)="setConstructor()" class="constructor" [ngClass]="{'active': mode === 'constructor', 'inactive': mode === 'runtime'}">
+                <img src="../../../assets/selector.svg" [ngClass]="{'active-icon': mode === 'constructor'}">
+                <span>Constructor</span>
+            </button>
+        </div>
+        <div class="tools">
+            <div class="sidebar" [ngClass]="{'disable-tools': mode === 'runtime'}"
+                cdkDropList
+                [cdkDropListDisabled]="mode === 'runtime'"
+                #todoList="cdkDropList"
+                [cdkDropListData]="components"
+                [cdkDropListConnectedTo]="[doneList]"
+                (cdkDropListDropped)="drop($event)">
+                <div *ngFor="let item of components" cdkDrag>
+                    <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                    <ng-template [ngTemplateOutlet]="display" *ngIf="item === 'display'"></ng-template>
+                    <ng-template [ngTemplateOutlet]="actions" *ngIf="item === 'actions'"></ng-template>
+                    <ng-template [ngTemplateOutlet]="numbers" *ngIf="item === 'numbers'"></ng-template>
+                    <ng-template [ngTemplateOutlet]="equals" *ngIf="item === 'equals'"></ng-template>
+                </div>
+            </div>                
+
+            <div class="canvas" [ngClass]="{'canvas-dash': canvas.length <= 1 && mode === 'constructor'}" 
+                cdkDropList
+                [cdkDropListDisabled]="mode === 'runtime'"
+                #doneList="cdkDropList"
+                [cdkDropListData]="canvas"
+                [cdkDropListConnectedTo]="[todoList]"
+                (cdkDropListDropped)="drop($event)">
+                <ng-template [ngTemplateOutlet]="emptyCanvas" *ngIf="canvas.length <= 1 && mode === 'constructor'"></ng-template>
+                <div *ngFor="let item of canvas" cdkDrag>
+                    <ng-template [ngTemplateOutlet]="display" *ngIf="item === 'display'"></ng-template>
+                    <ng-template [ngTemplateOutlet]="actions" *ngIf="item === 'actions'"></ng-template>
+                    <ng-template [ngTemplateOutlet]="numbers" *ngIf="item === 'numbers'"></ng-template>
+                    <ng-template [ngTemplateOutlet]="equals" *ngIf="item === 'equals'"></ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<ng-template #emptyCanvas>
+    <div class="empty-container">
+        <img src="../../../assets/add.svg">
+        <span class="empty-header">Drag here</span>
+        <span>any item from the</span>
+        <span>left panel</span>
+    </div>
+</ng-template>
+
+<ng-template #display>
+    <div class="tool-container" (dblclick)="removeFromCanvas('display')">
+        <app-display [resultData]="calculatingProcess"></app-display>
+    </div>
+</ng-template>
+
+<ng-template #actions>
+    <div class="tool-container action-buttons" [ngClass]="{'disabled-btn': mode === 'constructor'}" (dblclick)="removeFromCanvas('actions')">
+        <button class="tool-btn" (click)="divide()">
+            <span class="btn-value">/</span>
+        </button>
+        <button class="tool-btn" (click)="mult()">
+            <span class="btn-value">X</span>
+        </button>
+        <button class="tool-btn"  (click)="subst()">
+            <span class="btn-value">-</span>
+        </button>
+        <button class="tool-btn" (click)="add()">
+            <span class="btn-value">+</span>
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #numbers>
+    <div class="tool-container number-buttons" [ngClass]="{'disabled-btn': mode === 'constructor'}" (dblclick)="removeFromCanvas('numbers')">
+        <div class="number-section">
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">7</span>
+            </button>
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">8</span>
+            </button>
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">9</span>
+            </button>
+        </div>
+        <div class="number-section">
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">4</span>
+            </button>
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">5</span>
+            </button>
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">6</span>
+            </button>
+        </div>
+        <div class="number-section">
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">1</span>
+            </button>
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">2</span>
+            </button>
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">3</span>
+            </button>
+        </div>
+        <div class="number-section">
+            <button class="tool-btn zero" (click)="action($event.target)">
+                <span class="btn-value">0</span>
+            </button>
+            <button class="tool-btn" (click)="action($event.target)">
+                <span class="btn-value">,</span>
+            </button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #equals>
+    <div class="tool-container" [ngClass]="{'disabled-btn': mode === 'constructor'}" (dblclick)="removeFromCanvas('equals')">
+        <button class="equal-btn" (click)="equal()" >
+             <span> = </span>
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- playground -->
+<!-- <div class="example-container">
+  <h2>To do</h2>
+
+  <div
+    cdkDropList
+    #todoList="cdkDropList"
+    [cdkDropListData]="todo"
+    [cdkDropListConnectedTo]="[doneList]"
+    class="example-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let item of todo" cdkDrag>
+        <ng-template [ngTemplateOutlet]="display" *ngIf="item === 'display'"></ng-template>
+        <ng-template [ngTemplateOutlet]="actions" *ngIf="item === 'actions'"></ng-template>
+        <ng-template [ngTemplateOutlet]="numbers" *ngIf="item === 'numbers'"></ng-template>
+        <ng-template [ngTemplateOutlet]="equals" *ngIf="item === 'equals'"></ng-template>
+    </div>
+  </div>
+</div>
+
+<div class="example-container">
+  <h2>Done</h2>
+
+  <div
+    cdkDropList
+    #doneList="cdkDropList"
+    [cdkDropListData]="done"
+    [cdkDropListConnectedTo]="[todoList]"
+    class="example-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let item of done" cdkDrag>
+        <ng-template [ngTemplateOutlet]="display" *ngIf="item === 'display'"></ng-template>
+        <ng-template [ngTemplateOutlet]="actions" *ngIf="item === 'actions'"></ng-template>
+        <ng-template [ngTemplateOutlet]="numbers" *ngIf="item === 'numbers'"></ng-template>
+        <ng-template [ngTemplateOutlet]="equals" *ngIf="item === 'equals'"></ng-template>
+    </div>
+  </div>
+</div> -->
